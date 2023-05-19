@@ -1,0 +1,35 @@
+syntax = "proto3";
+option go_package = "/protos";
+
+message DownloadImageViewModel {
+    double download_time = 1;
+    double serialization_time = 2;
+    bytes data = 3;
+}  
+
+message DownloadAndResizeImageViewModel {
+    double download_time = 1;
+    double resize_time = 2;
+    double serialization_time = 3;
+    bytes data = 4;
+}  
+
+message JsonViewModel {
+    int32 id = 1;
+    string title = 2;
+    string desc = 3;
+    int32 price = 4;
+    double discount_percentage = 5;
+    double rating = 6;
+    int32 stock = 7;
+    string brand = 8;
+    string category = 9;
+    string thumbnail = 10;
+    repeated string images = 11;
+}
+
+message JsonViewModels {
+    double json_time = 1;
+    double serialization_time = 2;
+    repeated JsonViewModel jsons = 3;
+}
