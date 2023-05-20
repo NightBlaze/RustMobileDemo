@@ -64,15 +64,15 @@ pub extern "C" fn rust_download_image() -> *mut RustByteSlice {
 
     // let serialize_start = std::time::Instant::now();
     // let mut _view_model = crate::protos::viewmodels::DownloadImageViewModel::new();
-    // _view_model.download_time = download_elapsed.as_secs_f64();
+    // _view_model.download_time = download_elapsed.as_secs_f64() * 1000.0;
     // _view_model.data = data_clone;
     // let _result = _view_model.write_to_bytes().unwrap();
     // let serialize_elapsed = serialize_start.elapsed();
 
     let mut view_model = crate::protos::viewmodels::DownloadImageViewModel::new();
-    view_model.download_time = download_elapsed.as_secs_f64();
+    view_model.download_time = download_elapsed.as_secs_f64() * 1000.0;
     view_model.data = data;
-    view_model.serialization_time = 0.0; // serialize_elapsed.as_secs_f64();
+    view_model.serialization_time = 0.0; // serialize_elapsed.as_secs_f64() * 1000.0;
     let result = view_model.write_to_bytes().unwrap();
 
     let result = Box::new(RustByteSlice::new(result));
@@ -93,16 +93,16 @@ pub extern "C" fn rust_download_and_resize_image(width: libc::c_uint, height: li
 
     // let serialize_start = std::time::Instant::now();
     // let mut _view_model = crate::protos::viewmodels::DownloadAndResizeImageViewModel::new();
-    // _view_model.download_time = download_elapsed.as_secs_f64();
-    // _view_model.resize_time = resize_elapsed.as_secs_f64();
+    // _view_model.download_time = download_elapsed.as_secs_f64() * 1000.0;
+    // _view_model.resize_time = resize_elapsed.as_secs_f64() * 1000.0;
     // _view_model.data = resized_clone;
     // let _result = _view_model.write_to_bytes().unwrap();
     // let serialize_elapsed = serialize_start.elapsed();
 
     let mut view_model = crate::protos::viewmodels::DownloadAndResizeImageViewModel::new();
-    view_model.download_time = download_elapsed.as_secs_f64();
-    view_model.resize_time = resize_elapsed.as_secs_f64();
-    view_model.serialization_time = 0.0; // serialize_elapsed.as_secs_f64();
+    view_model.download_time = download_elapsed.as_secs_f64() * 1000.0;
+    view_model.resize_time = resize_elapsed.as_secs_f64() * 1000.0;
+    view_model.serialization_time = 0.0; // serialize_elapsed.as_secs_f64() * 1000.0;
     view_model.data = resized;
     let result = view_model.write_to_bytes().unwrap();
 
@@ -133,7 +133,7 @@ pub extern "C" fn rust_parse_big_json() -> *mut RustByteSlice {
     //     view_model
     // }).collect();
     // let mut _view_model = crate::protos::viewmodels::JsonViewModels::new();
-    // _view_model.json_time = json_elapsed.as_secs_f64();
+    // _view_model.json_time = json_elapsed.as_secs_f64() * 1000.0;
     // _view_model.jsons = _json_view_models;
     // let _result = _view_model.write_to_bytes().unwrap();
     // let serialize_elapsed = serialize_start.elapsed();
@@ -154,8 +154,8 @@ pub extern "C" fn rust_parse_big_json() -> *mut RustByteSlice {
         view_model
     }).collect();
     let mut view_model = crate::protos::viewmodels::JsonViewModels::new();
-    view_model.json_time = json_elapsed.as_secs_f64();
-    view_model.serialization_time = 0.0; // serialize_elapsed.as_secs_f64();
+    view_model.json_time = json_elapsed.as_secs_f64() * 1000.0;
+    view_model.serialization_time = 0.0; // serialize_elapsed.as_secs_f64() * 1000.0;
     view_model.jsons = json_view_models;
     let result = view_model.write_to_bytes().unwrap();
 
@@ -186,7 +186,7 @@ pub extern "C" fn rust_parse_small_json() -> *mut RustByteSlice {
     //     view_model
     // }).collect();
     // let mut _view_model = crate::protos::viewmodels::JsonViewModels::new();
-    // _view_model.json_time = json_elapsed.as_secs_f64();
+    // _view_model.json_time = json_elapsed.as_secs_f64() * 1000.0;
     // _view_model.jsons = _json_view_models;
     // let _result = _view_model.write_to_bytes().unwrap();
     // let serialize_elapsed = serialize_start.elapsed();
@@ -207,8 +207,8 @@ pub extern "C" fn rust_parse_small_json() -> *mut RustByteSlice {
         view_model
     }).collect();
     let mut view_model = crate::protos::viewmodels::JsonViewModels::new();
-    view_model.json_time = json_elapsed.as_secs_f64();
-    view_model.serialization_time = 0.0; // serialize_elapsed.as_secs_f64();
+    view_model.json_time = json_elapsed.as_secs_f64() * 1000.0;
+    view_model.serialization_time = 0.0; // serialize_elapsed.as_secs_f64() * 1000.0;
     view_model.jsons = json_view_models;
     let result = view_model.write_to_bytes().unwrap();
 
@@ -246,7 +246,7 @@ fn resize_image(image_data: Vec<u8>, target_width: u32, target_height: u32) -> V
         width,
         height,
         img.to_rgba8().into_raw(),
-        fr::PixelType::U8x3,
+        fr::PixelType::U8x4,
     ).unwrap();
 
     // Create container for data of destination image
@@ -275,7 +275,7 @@ fn resize_image(image_data: Vec<u8>, target_width: u32, target_height: u32) -> V
             dst_image.buffer(),
             dst_width.get(),
             dst_height.get(),
-            ColorType::Rgb8,
+            ColorType::Rgba8,
         )
         .unwrap();
 
