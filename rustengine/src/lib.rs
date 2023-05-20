@@ -39,14 +39,15 @@ struct ProductDTO {
 #[repr(C)]
 #[derive(Debug)]
 pub struct RustByteSlice {
-    pub bytes: *const u8,
+    pub bytes: *mut u8,
     pub len: libc::size_t,
 }
 
 impl RustByteSlice {
     pub fn new(data: Vec<u8>) -> RustByteSlice {
+        let mut data = data;
         let result = RustByteSlice {
-            bytes: data.as_ptr(),
+            bytes: data.as_mut_ptr(),
             len: data.len()
         };
         std::mem::forget(data);
@@ -234,6 +235,8 @@ pub unsafe extern "C" fn rust_destroy_byte_slice(slice: *mut RustByteSlice) {
     }
     unsafe {
         let slice = Box::from_raw(slice);
+        let data = Box::from_raw(slice.bytes);
+        drop(data);
         drop(slice);
     }
 }
