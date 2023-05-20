@@ -45,10 +45,12 @@ pub struct RustByteSlice {
 
 impl RustByteSlice {
     pub fn new(data: Vec<u8>) -> RustByteSlice {
-        RustByteSlice {
+        let result = RustByteSlice {
             bytes: data.as_ptr(),
             len: data.len()
-        }
+        };
+        std::mem::forget(data);
+        result
     }
 }
 
@@ -58,19 +60,19 @@ pub extern "C" fn rust_download_image() -> *mut RustByteSlice {
     let data = fetch_url(String::from(IMAGE_URL));
     let download_elapsed = download_start.elapsed();
 
-    let data_clone = data.clone();
+    // let data_clone = data.clone();
 
-    let serialize_start = std::time::Instant::now();
-    let mut _view_model = crate::protos::viewmodels::DownloadImageViewModel::new();
-    _view_model.download_time = download_elapsed.as_millis() as f64;
-    _view_model.data = data_clone;
-    let _result = _view_model.write_to_bytes().unwrap();
-    let serialize_elapsed = serialize_start.elapsed();
+    // let serialize_start = std::time::Instant::now();
+    // let mut _view_model = crate::protos::viewmodels::DownloadImageViewModel::new();
+    // _view_model.download_time = download_elapsed.as_secs_f64();
+    // _view_model.data = data_clone;
+    // let _result = _view_model.write_to_bytes().unwrap();
+    // let serialize_elapsed = serialize_start.elapsed();
 
     let mut view_model = crate::protos::viewmodels::DownloadImageViewModel::new();
-    view_model.download_time = download_elapsed.as_millis() as f64;
+    view_model.download_time = download_elapsed.as_secs_f64();
     view_model.data = data;
-    view_model.serialization_time = serialize_elapsed.as_millis() as f64;
+    view_model.serialization_time = 0.0; // serialize_elapsed.as_secs_f64();
     let result = view_model.write_to_bytes().unwrap();
 
     let result = Box::new(RustByteSlice::new(result));
@@ -87,20 +89,20 @@ pub extern "C" fn rust_download_and_resize_image(width: libc::c_uint, height: li
     let resized = resize_image(data, width, height);
     let resize_elapsed = resize_start.elapsed();
 
-    let resized_clone = resized.clone();
+    // let resized_clone = resized.clone();
 
-    let serialize_start = std::time::Instant::now();
-    let mut _view_model = crate::protos::viewmodels::DownloadAndResizeImageViewModel::new();
-    _view_model.download_time = download_elapsed.as_millis() as f64;
-    _view_model.resize_time = resize_elapsed.as_millis() as f64;
-    _view_model.data = resized_clone;
-    let _result = _view_model.write_to_bytes().unwrap();
-    let serialize_elapsed = serialize_start.elapsed();
+    // let serialize_start = std::time::Instant::now();
+    // let mut _view_model = crate::protos::viewmodels::DownloadAndResizeImageViewModel::new();
+    // _view_model.download_time = download_elapsed.as_secs_f64();
+    // _view_model.resize_time = resize_elapsed.as_secs_f64();
+    // _view_model.data = resized_clone;
+    // let _result = _view_model.write_to_bytes().unwrap();
+    // let serialize_elapsed = serialize_start.elapsed();
 
     let mut view_model = crate::protos::viewmodels::DownloadAndResizeImageViewModel::new();
-    view_model.download_time = download_elapsed.as_millis() as f64;
-    view_model.resize_time = resize_elapsed.as_millis() as f64;
-    view_model.serialization_time = serialize_elapsed.as_millis() as f64;
+    view_model.download_time = download_elapsed.as_secs_f64();
+    view_model.resize_time = resize_elapsed.as_secs_f64();
+    view_model.serialization_time = 0.0; // serialize_elapsed.as_secs_f64();
     view_model.data = resized;
     let result = view_model.write_to_bytes().unwrap();
 
@@ -114,27 +116,27 @@ pub extern "C" fn rust_parse_big_json() -> *mut RustByteSlice {
     let json_dto: JsonDTO = serde_json::from_str(BIG_JSON_DATA).unwrap();
     let json_elapsed = json_start.elapsed();
 
-    let serialize_start = std::time::Instant::now();
-    let _json_view_models = json_dto.products.iter().map(|product| {
-        let mut view_model = crate::protos::viewmodels::JsonViewModel::new();
-        view_model.id = product.id as i32;
-        view_model.title = product.title.clone();
-        view_model.desc = product.description.clone();
-        view_model.price = product.price as i32;
-        view_model.discount_percentage = product.discount_percentage;
-        view_model.rating = product.rating;
-        view_model.stock = product.stock as i32;
-        view_model.brand = product.brand.clone();
-        view_model.category = product.category.clone();
-        view_model.thumbnail = product.thumbnail.clone();
-        view_model.images = product.images.clone();
-        view_model
-    }).collect();
-    let mut _view_model = crate::protos::viewmodels::JsonViewModels::new();
-    _view_model.json_time = json_elapsed.as_millis() as f64;
-    _view_model.jsons = _json_view_models;
-    let _result = _view_model.write_to_bytes().unwrap();
-    let serialize_elapsed = serialize_start.elapsed();
+    // let serialize_start = std::time::Instant::now();
+    // let _json_view_models = json_dto.products.iter().map(|product| {
+    //     let mut view_model = crate::protos::viewmodels::JsonViewModel::new();
+    //     view_model.id = product.id as i32;
+    //     view_model.title = product.title.clone();
+    //     view_model.desc = product.description.clone();
+    //     view_model.price = product.price as i32;
+    //     view_model.discount_percentage = product.discount_percentage;
+    //     view_model.rating = product.rating;
+    //     view_model.stock = product.stock as i32;
+    //     view_model.brand = product.brand.clone();
+    //     view_model.category = product.category.clone();
+    //     view_model.thumbnail = product.thumbnail.clone();
+    //     view_model.images = product.images.clone();
+    //     view_model
+    // }).collect();
+    // let mut _view_model = crate::protos::viewmodels::JsonViewModels::new();
+    // _view_model.json_time = json_elapsed.as_secs_f64();
+    // _view_model.jsons = _json_view_models;
+    // let _result = _view_model.write_to_bytes().unwrap();
+    // let serialize_elapsed = serialize_start.elapsed();
 
     let json_view_models = json_dto.products.iter().map(|product| {
         let mut view_model = crate::protos::viewmodels::JsonViewModel::new();
@@ -152,8 +154,8 @@ pub extern "C" fn rust_parse_big_json() -> *mut RustByteSlice {
         view_model
     }).collect();
     let mut view_model = crate::protos::viewmodels::JsonViewModels::new();
-    view_model.json_time = json_elapsed.as_millis() as f64;
-    view_model.serialization_time = serialize_elapsed.as_millis() as f64;
+    view_model.json_time = json_elapsed.as_secs_f64();
+    view_model.serialization_time = 0.0; // serialize_elapsed.as_secs_f64();
     view_model.jsons = json_view_models;
     let result = view_model.write_to_bytes().unwrap();
 
@@ -167,27 +169,27 @@ pub extern "C" fn rust_parse_small_json() -> *mut RustByteSlice {
     let json_dto: JsonDTO = serde_json::from_str(SMALL_JSON_DATA).unwrap();
     let json_elapsed = json_start.elapsed();
 
-    let serialize_start = std::time::Instant::now();
-    let _json_view_models = json_dto.products.iter().map(|product| {
-        let mut view_model = crate::protos::viewmodels::JsonViewModel::new();
-        view_model.id = product.id as i32;
-        view_model.title = product.title.clone();
-        view_model.desc = product.description.clone();
-        view_model.price = product.price as i32;
-        view_model.discount_percentage = product.discount_percentage;
-        view_model.rating = product.rating;
-        view_model.stock = product.stock as i32;
-        view_model.brand = product.brand.clone();
-        view_model.category = product.category.clone();
-        view_model.thumbnail = product.thumbnail.clone();
-        view_model.images = product.images.clone();
-        view_model
-    }).collect();
-    let mut _view_model = crate::protos::viewmodels::JsonViewModels::new();
-    _view_model.json_time = json_elapsed.as_millis() as f64;
-    _view_model.jsons = _json_view_models;
-    let _result = _view_model.write_to_bytes().unwrap();
-    let serialize_elapsed = serialize_start.elapsed();
+    // let serialize_start = std::time::Instant::now();
+    // let _json_view_models = json_dto.products.iter().map(|product| {
+    //     let mut view_model = crate::protos::viewmodels::JsonViewModel::new();
+    //     view_model.id = product.id as i32;
+    //     view_model.title = product.title.clone();
+    //     view_model.desc = product.description.clone();
+    //     view_model.price = product.price as i32;
+    //     view_model.discount_percentage = product.discount_percentage;
+    //     view_model.rating = product.rating;
+    //     view_model.stock = product.stock as i32;
+    //     view_model.brand = product.brand.clone();
+    //     view_model.category = product.category.clone();
+    //     view_model.thumbnail = product.thumbnail.clone();
+    //     view_model.images = product.images.clone();
+    //     view_model
+    // }).collect();
+    // let mut _view_model = crate::protos::viewmodels::JsonViewModels::new();
+    // _view_model.json_time = json_elapsed.as_secs_f64();
+    // _view_model.jsons = _json_view_models;
+    // let _result = _view_model.write_to_bytes().unwrap();
+    // let serialize_elapsed = serialize_start.elapsed();
 
     let json_view_models = json_dto.products.iter().map(|product| {
         let mut view_model = crate::protos::viewmodels::JsonViewModel::new();
@@ -205,8 +207,8 @@ pub extern "C" fn rust_parse_small_json() -> *mut RustByteSlice {
         view_model
     }).collect();
     let mut view_model = crate::protos::viewmodels::JsonViewModels::new();
-    view_model.json_time = json_elapsed.as_millis() as f64;
-    view_model.serialization_time = serialize_elapsed.as_millis() as f64;
+    view_model.json_time = json_elapsed.as_secs_f64();
+    view_model.serialization_time = 0.0; // serialize_elapsed.as_secs_f64();
     view_model.jsons = json_view_models;
     let result = view_model.write_to_bytes().unwrap();
 
